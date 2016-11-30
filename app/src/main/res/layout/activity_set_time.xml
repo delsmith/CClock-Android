@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_set_time"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    tools:context="com.antares.dsmith.cclock.SetTimeActivity"
+    android:paddingBottom="2dp"
+    android:paddingTop="2dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText android:id="@+id/set_time_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:hint="@string/set_time_label"
+            android:inputType="none"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:text="ToggleButton"
+                android:textOn="@string/label_auto"
+                android:textOff="@string/label_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/toggleTimer"
+                android:onClick="toggleTimer"
+                android:layout_gravity="end"
+                android:layout_below="@+id/set_time_label"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_weight="1" />
+
+            <ToggleButton
+                android:text="ToggleButton"
+                android:textOn="@string/label_UTC"
+                android:textOff="@string/label_local"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/toggleUTC"
+                android:onClick="toggleUTC"
+                android:layout_gravity="fill_horizontal"
+                android:layout_below="@+id/set_time_label"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <FrameLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorControlActivated">
+
+            <DatePicker
+                android:layout_width="match_parent"
+                android:layout_height="144dp"
+                android:id="@+id/datePicker"
+                android:datePickerMode="spinner"
+                android:calendarViewShown="false" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="4dp">
+
+            <TimePicker
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePicker"
+                android:timePickerMode="spinner" />
+
+        </FrameLayout>
+
+        <Button
+            android:text="APPLY"
+            android:onClick="Update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ApplyButton"
+            android:layout_gravity="bottom|end" />
+
+    </LinearLayout>
+
+</LinearLayout>
