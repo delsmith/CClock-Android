@@ -89,10 +89,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <EditText android:id="@+id/time_value"
-            android:layout_width="fill_parent"
+        <EditText android:id="@+id/date_value"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
+            android:gravity="start"
+            android:hint="@string/date_value" />
+        <EditText android:id="@+id/time_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
             android:hint="@string/time_value" />
     </LinearLayout>
 
@@ -160,7 +165,7 @@
             android:text="Update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button3"
+            android:id="@+id/UpdateButton"
             android:layout_gravity="bottom|end"
             android:onClick="Refresh"
             android:gravity="center_vertical|end" />

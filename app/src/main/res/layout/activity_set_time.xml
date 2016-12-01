@@ -98,13 +98,29 @@
 
         </FrameLayout>
 
-        <Button
-            android:text="APPLY"
-            android:onClick="Update"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/ApplyButton"
-            android:layout_gravity="bottom|end" />
+            android:layout_height="match_parent">
+
+            <Button
+                android:text="RESET"
+                android:onClick="Reset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ResetButton"
+                android:layout_gravity="bottom|start"
+                android:layout_weight="1" />
+
+            <Button
+                android:text="SET"
+                android:onClick="SetTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/SetButton"
+                android:layout_gravity="bottom|end"
+                android:layout_weight="1" />
+        </LinearLayout>
 
     </LinearLayout>
 

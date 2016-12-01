@@ -1,5 +1,7 @@
 package com.antares.dsmith.cclock.util;
 
+import java.util.Calendar;
+
 import static java.lang.Math.abs;
 
 /**
@@ -25,4 +27,13 @@ public class text {
         Long time = seconds % 86400, hour = time/3600, minute = (time%3600)/60, second = time%60;
         return String.format("%02d:%02d:%02d",hour,minute,second);
     }
+
+    // format date as YYYY.MM.DD
+    public static String tYMD_format(Long seconds) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(seconds*1000);
+        // note: Month range 0-11
+        return String.format("%04d.%02d.%02d",c.get(Calendar.YEAR),1+c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
+    }
+
 }
