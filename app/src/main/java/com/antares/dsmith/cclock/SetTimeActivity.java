@@ -77,6 +77,7 @@ public class SetTimeActivity extends AppCompatActivity {
     // respond to the 'Update' button
     public void SetTime(View view) {
         // update the UTC Time preference from the pickers
+        // TODO: there is something wrong - the day of month is wrong from 13:00 (local) on - when TZ = +11
         Integer year = mDatePicker.getYear();
         Integer month = mDatePicker.getMonth();
         Integer day = mDatePicker.getDayOfMonth();
@@ -107,10 +108,10 @@ public class SetTimeActivity extends AppCompatActivity {
         mResetButton.setEnabled(!clock_mode);
         mTimePicker.setEnabled(!clock_mode);
         mDatePicker.setEnabled(!clock_mode);
-        // TODO: find out why enable/disable works but they don't hide when INVISIBLE
-        mUtcButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
+        // enable/disable works, use GONE instead of INVISIBLE
         mSetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
         mResetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
+        //mUtcButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
     }
 
     // respond to the 'Reset' button
