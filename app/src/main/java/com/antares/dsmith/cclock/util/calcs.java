@@ -100,7 +100,7 @@ from WikiPedia  (amended by Del Smith to use radians)
         // calculate the sidereal time at a specific place and time
         Double time =           utc / 3600.;            // hours since 1/1/1970
         Double epochTime =      262980.;                // hours from 1/1/1970 to  1/1/2000 12:00:00
-        Double epochSidTime =   6.697374558;       // sidereal time at epoch (hours from 1/1/1970)
+        Double epochSidTime =   6.697374558;            // sidereal time at epoch (hours)
         Double sidRatio =       1.002737909350795;      // ratio of sidereal time unit to calendar unit  (366.25/365.25)
         Double siderealTime =   3600 * ( (epochTime + (epochSidTime + sidRatio*(time - epochTime)) + longitude/15.) % 24.);  // in hours
         return siderealTime.longValue();

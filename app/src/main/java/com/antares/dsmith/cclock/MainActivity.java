@@ -12,6 +12,7 @@ import android.view.View;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -47,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
     private Location mLastLocation;
-    private EditText mLatitudeField, mLongitudeField, mLocalDateField, mLocalTimeField, mUtcTimeField, mSolarTimeField, mSiderealTimeField;
+    private TextView mLatitudeField, mLongitudeField;
+    private TextView mLocalDateField, mLocalTimeField, mUtcTimeField, mSolarTimeField, mSiderealTimeField;
     private Button mUpdateButton;
 
     // state information
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setLocalData() {
-        
+
         mPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         mEditor = mPreferences.edit();
         // create preferences with default values unless they exist
@@ -91,13 +93,13 @@ public class MainActivity extends AppCompatActivity {
         night_mode = mPreferences.getBoolean(APP_PREFERENCES_night_mode,true);
 
         // setup the view object references
-        mLocalTimeField = (EditText) findViewById(R.id.time_value);
-        mLocalDateField = (EditText) findViewById(R.id.date_value);
-        mUtcTimeField = (EditText) findViewById(R.id.UTC_value);
-        mSolarTimeField = (EditText) findViewById(R.id.sol_time_value);
-        mSiderealTimeField = (EditText) findViewById(R.id.sid_time_value);
-        mLatitudeField = (EditText) findViewById(R.id.lat_value);
-        mLongitudeField = (EditText) findViewById(R.id.long_value);
+        mLocalTimeField = (TextView) findViewById(R.id.time_value);
+        mLocalDateField = (TextView) findViewById(R.id.date_value);
+        mUtcTimeField = (TextView) findViewById(R.id.UTC_value);
+        mSolarTimeField = (TextView) findViewById(R.id.sol_time_value);
+        mSiderealTimeField = (TextView) findViewById(R.id.sid_time_value);
+        mLatitudeField = (TextView) findViewById(R.id.lat_value);
+        mLongitudeField = (TextView) findViewById(R.id.long_value);
         mUpdateButton = (Button) findViewById((R.id.UpdateButton));
 
         // get location coordinates from preferences, in degrees
@@ -121,18 +123,18 @@ public class MainActivity extends AppCompatActivity {
     public void refresh(){
         // get UTC time and timezone offset from preferences,
         UTC_time = mPreferences.getLong(APP_PREFERENCES_UTC_time,0);
-        // format the UTC time field
-        mUtcTimeField.setText(t24hr_format(UTC_time));
-        // calculate the local time
         TZ_offset = mPreferences.getLong(APP_PREFERENCES_TZ_offset,(150*3600));
+        // format the UTC time field
+        mUtcTimeField.setText(t24hr_format(UTC_time-TZ_offset, true ).substring(0,8));
+        // calculate the local time
         local_time = UTC_time + TZ_offset;
         // format the local time field
-        mLocalTimeField.setText(t24hr_format(local_time));
-        mLocalDateField.setText(tYMD_format(local_time));
+        mLocalTimeField.setText(t24hr_format(UTC_time,false));   //(local_time));
+        mLocalDateField.setText(tYMD_format(UTC_time,false));
         // format the solar time field
-        mSolarTimeField.setText(t24hr_format(solar_time(UTC_time,mLongitude)));
+        mSolarTimeField.setText(t24hr_format(solar_time(UTC_time,mLongitude)-TZ_offset,true).substring(0,8));
         //format the sidereal time field
-        mSiderealTimeField.setText(t24hr_format(sidereal_time(UTC_time,mLongitude)));
+        mSiderealTimeField.setText(t24hr_format(sidereal_time(UTC_time,mLongitude)-TZ_offset,true).substring(0,8));
         // format the coordinates fields
         String coord = dms_format(mLatitude,false);
         mLatitudeField.setText(coord);

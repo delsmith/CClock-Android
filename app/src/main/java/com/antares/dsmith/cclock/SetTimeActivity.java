@@ -45,13 +45,14 @@ public class SetTimeActivity extends AppCompatActivity {
     private TimePicker mTimePicker;
     private DatePicker mDatePicker;
 
+    /* activity level event handlers ==============================================================
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_time);
 
         mPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-
         mUtcButton = (ToggleButton) findViewById(R.id.toggleUTC);
         mAutoButton = (ToggleButton) findViewById(R.id.toggleTimer);
         mTimePicker = (TimePicker) findViewById(R.id.timePicker);
@@ -60,72 +61,8 @@ public class SetTimeActivity extends AppCompatActivity {
         mResetButton = (Button) findViewById(R.id.ResetButton);
     }
 
-    public void toggleTimer(View view) {
-        // manage timer on/off transition
-        // clock_mode = (mAutoButton.getText()==mAutoButton.getTextOn());
-        clock_mode = !clock_mode;
-        isChanged = true;
-        ApplyChanges();
-    }
-
-    public void toggleUTC(View view) {
-        // toggle UTC/Local mode
-        UTC_mode = !UTC_mode;
-        isChanged = true;
-    }
-
-    // respond to the 'Update' button
-    public void SetTime(View view) {
-        // update the UTC Time preference from the pickers
-        // TODO: there is something wrong - the day of month is wrong from 13:00 (local) on - when TZ = +11
-        Integer year = mDatePicker.getYear();
-        Integer month = mDatePicker.getMonth();
-        Integer day = mDatePicker.getDayOfMonth();
-        Integer hour = mTimePicker.getCurrentHour();
-        Integer minute = mTimePicker.getCurrentMinute();
-        Integer second = 0;
-        Calendar c = Calendar.getInstance();
-        c.set(year,month,day,hour,minute,second);
-        UTC_time = Long.valueOf(c.getTimeInMillis()/1000);
-        if (UTC_mode) UTC_time += TZ_offset;
-        isChanged = true;
-        ApplyChanges();
-        finish();
-
-    }
-
-    protected void ApplyChanges() {
-        if (isChanged) {
-            mEditor = mPreferences.edit();
-            mEditor.putBoolean(APP_PREFERENCES_clock_mode,clock_mode);
-            mEditor.putBoolean(APP_PREFERENCES_UTC_mode,UTC_mode);
-            mEditor.putLong(APP_PREFERENCES_UTC_time,UTC_time);
-            mEditor.commit();
-            isChanged = false;
-        }
-        mUtcButton.setEnabled(!clock_mode);
-        mSetButton.setEnabled(!clock_mode);
-        mResetButton.setEnabled(!clock_mode);
-        mTimePicker.setEnabled(!clock_mode);
-        mDatePicker.setEnabled(!clock_mode);
-        // enable/disable works, use GONE instead of INVISIBLE
-        mSetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
-        mResetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
-        //mUtcButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
-    }
-
-    // respond to the 'Reset' button
-    protected void Reset(View view) {
-        // initialise the pickers with the current date & time
-        Calendar c = Calendar.getInstance();
-        UTC_time = Long.valueOf(c.getTimeInMillis()/1000);
-        isChanged = true;
-        ApplyChanges();
-        initPickers();
-    }
-
+    @Override
     protected void onStart() {
-
         super.onStart();
 
         // setup mode options
@@ -137,6 +74,89 @@ public class SetTimeActivity extends AppCompatActivity {
         isChanged = false;
         ApplyChanges();
         initPickers();
+    }
+
+    @Override
+    public void onBackPressed() {
+        ApplyChanges();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        // if changes were made, update shared prefs (Button states, date, time)
+        ApplyChanges();
+        super.onStop();
+    }
+
+    /* view level event handlers ==================================================================
+    */
+    // toggle auto/select mode
+    public void toggleTimer(View view) {
+        clock_mode = !clock_mode;
+        isChanged = true;
+        ApplyChanges();
+    }
+
+    // toggle UTC/Local mode
+    public void toggleUTC(View view) {
+        UTC_mode = !UTC_mode;
+        isChanged = true;
+    }
+
+    // respond to the 'SET' button
+    public void SetTime(View view) {
+        // update the UTC Time preference from the pickers
+        Integer year = mDatePicker.getYear();
+        Integer month = mDatePicker.getMonth();
+        Integer day = mDatePicker.getDayOfMonth();
+        Integer hour = mTimePicker.getCurrentHour();
+        Integer minute = mTimePicker.getCurrentMinute();
+        Integer second = 0;
+        Calendar c = Calendar.getInstance();
+        c.set(year,month,day,hour,minute,second);
+        TZ_offset = new Integer((c.get(Calendar.ZONE_OFFSET) + c.get(Calendar.DST_OFFSET)) / 1000).longValue();
+        // NOTE: Calendar assumes these values are for local time and calculates UTC time internally
+        UTC_time = Long.valueOf(c.getTimeInMillis()/1000);
+        if (UTC_mode) UTC_time += TZ_offset;
+        isChanged = true;
+        ApplyChanges();
+        finish();
+
+    }
+
+    // respond to the 'Reset' button
+    // set the spinners to the current time (for selected UTC mode)
+    protected void Reset(View view) {
+        // initialise the pickers with the current date & time
+        Calendar c = Calendar.getInstance();
+        UTC_time = Long.valueOf(c.getTimeInMillis()/1000);
+        isChanged = true;
+        ApplyChanges();
+        initPickers();
+    }
+
+    /* shared methods for event handlers ==========================================================
+    */
+    protected void ApplyChanges() {
+        if (isChanged) {
+            mEditor = mPreferences.edit();
+            mEditor.putBoolean(APP_PREFERENCES_clock_mode,clock_mode);
+            mEditor.putBoolean(APP_PREFERENCES_UTC_mode,UTC_mode);
+            mEditor.putLong(APP_PREFERENCES_UTC_time,UTC_time);
+            mEditor.putLong(APP_PREFERENCES_TZ_offset,TZ_offset);
+            mEditor.commit();
+            isChanged = false;
+        }
+        mUtcButton.setEnabled(!clock_mode);
+        mSetButton.setEnabled(!clock_mode);
+        mResetButton.setEnabled(!clock_mode);
+        mTimePicker.setEnabled(!clock_mode);
+        mDatePicker.setEnabled(!clock_mode);
+        // use GONE instead of INVISIBLE
+        mSetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
+        mResetButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
+        //mUtcButton.setVisibility(clock_mode?View.GONE:View.VISIBLE);
     }
 
     protected void initPickers() {
@@ -155,17 +175,6 @@ public class SetTimeActivity extends AppCompatActivity {
         mTimePicker.setCurrentMinute(c.get(Calendar.MINUTE));
         mTimePicker.setIs24HourView(true);
         mTimePicker.setEnabled(!clock_mode);
-    }
-
-    @Override
-    public void onBackPressed() {
-        ApplyChanges();
-        super.onBackPressed();
-    }
-    protected void onStop() {
-        // if changes were made, update shared prefs (Button states, date, time)
-        ApplyChanges();
-        super.onStop();
     }
 
 }
