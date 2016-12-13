@@ -28,6 +28,7 @@ import static com.antares.dsmith.cclock.util.calcs.sidereal_time;
 import static com.antares.dsmith.cclock.util.calcs.solar_time;
 import static com.antares.dsmith.cclock.util.text.dms_format;
 import static com.antares.dsmith.cclock.util.text.t24hr_format;
+import static com.antares.dsmith.cclock.util.text.tHMS_format;
 import static com.antares.dsmith.cclock.util.text.tYMD_format;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean UTC_mode = false;       // [UTC | Local]
     private boolean locn_mode = true;       // [Auto | Select]
     private boolean night_mode = false;     // [Night | Day]
-    private Long local_time, UTC_time, TZ_offset;   // times in seconds
+    private Long UTC_time, TZ_offset;   // times in seconds
     private Double mLatitude, mLongitude;           // in degrees                                       // coords in seconds
 
     @Override
@@ -71,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private void setLocalData() {
 
         mPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        mEditor = mPreferences.edit();
         // create preferences with default values unless they exist
         if (! mPreferences.contains("clock_mode")) {
+            mEditor = mPreferences.edit();
             // initialise preferences with default settings
             mEditor.putBoolean(APP_PREFERENCES_clock_mode,true);     // Auto
             mEditor.putBoolean(APP_PREFERENCES_UTC_mode,false);      // Local
@@ -124,17 +125,17 @@ public class MainActivity extends AppCompatActivity {
         // get UTC time and timezone offset from preferences,
         UTC_time = mPreferences.getLong(APP_PREFERENCES_UTC_time,0);
         TZ_offset = mPreferences.getLong(APP_PREFERENCES_TZ_offset,(150*3600));
+
+        // format the local date & time fields
+        mLocalTimeField.setText(t24hr_format(UTC_time));   //(local_time));
+        mLocalDateField.setText(tYMD_format(UTC_time));
+
         // format the UTC time field
-        mUtcTimeField.setText(t24hr_format(UTC_time-TZ_offset, true ).substring(0,8));
-        // calculate the local time
-        local_time = UTC_time + TZ_offset;
-        // format the local time field
-        mLocalTimeField.setText(t24hr_format(UTC_time,false));   //(local_time));
-        mLocalDateField.setText(tYMD_format(UTC_time,false));
+        mUtcTimeField.setText(tHMS_format(UTC_time));
         // format the solar time field
-        mSolarTimeField.setText(t24hr_format(solar_time(UTC_time,mLongitude)-TZ_offset,true).substring(0,8));
+        mSolarTimeField.setText(tHMS_format(solar_time(UTC_time,mLongitude)));
         //format the sidereal time field
-        mSiderealTimeField.setText(t24hr_format(sidereal_time(UTC_time,mLongitude)-TZ_offset,true).substring(0,8));
+        mSiderealTimeField.setText(tHMS_format(sidereal_time(UTC_time,mLongitude)));
         // format the coordinates fields
         String coord = dms_format(mLatitude,false);
         mLatitudeField.setText(coord);
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void initTimeSetting() {
         Calendar c = Calendar.getInstance();
-        Long TZ_offset = new Integer((c.get(Calendar.ZONE_OFFSET) + c.get(Calendar.DST_OFFSET)) / 1000).longValue();
+        Long TZ_offset = Integer.valueOf((c.get(Calendar.ZONE_OFFSET) + c.get(Calendar.DST_OFFSET)) / 1000).longValue();
         mEditor.putLong(APP_PREFERENCES_UTC_time,c.getTimeInMillis()/1000);
         mEditor.putLong(APP_PREFERENCES_TZ_offset,TZ_offset);
     }

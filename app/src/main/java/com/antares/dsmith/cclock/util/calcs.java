@@ -57,8 +57,11 @@ from WikiPedia  (amended by Del Smith to use radians)
         // add longitude offset to the UTC time and adjust for Equation Of Time
         Long meanSolarTime = Double.valueOf(utc - 43200. + longitude*240.).longValue();
         // adjust for Equation of Time
-        int day_num = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-        return Double.valueOf(meanSolarTime+EqnOfTime(day_num)).longValue();
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(1000*utc);
+        int day_num = c.get(Calendar.DAY_OF_YEAR);
+        Long solarTime = Double.valueOf(meanSolarTime+EqnOfTime(day_num)).longValue();
+        return solarTime;
     }
 
     /*
@@ -86,7 +89,8 @@ from WikiPedia  (amended by Del Smith to use radians)
         Double alpha = omega*((delta+10)%365);                    // angle in (mean) circular orbit, solar year starts 21.Dec
         Double beta = alpha + 0.0333*sin(omega*((delta-2)%365));  // angle in elliptical orbit, from perigee 3.Jan (radians)
         Double gamma = ( alpha - atan( tan(beta) / cos(lambda))) / pi;  // the angular correction
-        return (43200. * (gamma - Double.valueOf(gamma+0.5).intValue()));
+        Double EoT = (43200. * (gamma - Double.valueOf(gamma+0.5).intValue()));
+        return EoT;
     }
 
     // calculate solar time from UTC time and longitude
@@ -102,8 +106,10 @@ from WikiPedia  (amended by Del Smith to use radians)
         Double epochTime =      262980.;                // hours from 1/1/1970 to  1/1/2000 12:00:00
         Double epochSidTime =   6.697374558;            // sidereal time at epoch (hours)
         Double sidRatio =       1.002737909350795;      // ratio of sidereal time unit to calendar unit  (366.25/365.25)
-        Double siderealTime =   3600 * ( (epochTime + (epochSidTime + sidRatio*(time - epochTime)) + longitude/15.) % 24.);  // in hours
-        return siderealTime.longValue();
+        // Double siderealTime =   3600 * ( (epochTime + (epochSidTime + sidRatio*(time - epochTime)) + longitude/15.) % 24.);  // in hours
+        Double siderealTime =   3600 * (epochTime + epochSidTime + sidRatio*(time - epochTime) + longitude/15.);  // in hours
+        Long sidereal = siderealTime.longValue();
+        return sidereal;
      }
 }
 
